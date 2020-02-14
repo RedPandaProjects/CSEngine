@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Main.cpp" />
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\CSEnginePCH.cpp" />
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Engine\CSEngine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Engine\CSMenuManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Engine\CSEngineFunctions.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Engine\CSCommonParser.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Engine\CSCVars.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Engine\CSConsole.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\CSHardware.cpp">
+      <Filter>Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\Resources\CSResourcesManager.cpp">
+      <Filter>Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\Resources\CSTexture2D.cpp">
+      <Filter>Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\Resources\CSResourcesManagerFunctions.cpp">
+      <Filter>Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\Resources\CSShader.cpp">
+      <Filter>Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\Blenders\CSBlenderCompile.cpp">
+      <Filter>Render\Blenders</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\Blenders\CSBlenderScreenSet.cpp">
+      <Filter>Render\Blenders</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{c61b5410-d63c-4b4d-bf57-4d0c196571d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\common">
+      <UniqueIdentifier>{b8bc7670-69ce-4f49-b426-5a7bbb34eef4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include\engine">
+      <UniqueIdentifier>{391da31a-131c-459d-b16d-f2622491b59a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{e2b725fc-a9c8-44b3-964d-749ac4b08521}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render">
+      <UniqueIdentifier>{caea9419-95ab-4bbd-9c05-1897b1952d47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Resources">
+      <UniqueIdentifier>{99907a1a-1532-4364-86d3-16d311ed9d63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Blenders">
+      <UniqueIdentifier>{cba18c5c-c238-4886-a8b9-771bfdc5bfc7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\include\common\gameinfo.h">
+      <Filter>Include\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\include\common\mathlib.h">
+      <Filter>Include\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\include\common\wrect.h">
+      <Filter>Include\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\include\common\cvardef.h">
+      <Filter>Include\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\include\engine\menu_int.h">
+      <Filter>Include\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\source\Engine\CSEngine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\source\CSEngine.hpp" />
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\include\CSEnginePublic.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\source\Engine\CSMenuManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\source\Engine\CSCommonParser.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\source\Engine\CSCVars.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\source\Engine\CSConsole.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\CSHardware.h">
+      <Filter>Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\Resources\CSResource.h">
+      <Filter>Render\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\Resources\CSResourcesManager.h">
+      <Filter>Render\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\Resources\CSTexture2D.h">
+      <Filter>Render\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\Resources\CSShader.h">
+      <Filter>Render\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\Blenders\CSBlenderCompiler.h">
+      <Filter>Render\Blenders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\projects\engine\cs16\CSEngine\source\Render\Blenders\CSBlenderScreenSet.h">
+      <Filter>Render\Blenders</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\GameDev\BearSDK\projects\engine\cs16\CSEngine\CSEngine.executable.cs">
+      <Filter>Include</Filter>
+    </None>
+  </ItemGroup>
+</Project>
