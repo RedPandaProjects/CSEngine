@@ -7,7 +7,6 @@ enum ShaderTypeTransformation
 enum ShaderVertexDeclaration
 {
 	SVD_UI,
-	SVD_UIT,
 	SVD_Count,
 };
 enum ShaderSamplerState
@@ -24,7 +23,7 @@ public:
 	void Clear();
 	void Copy(const CSShaderElement& right);
 	void Swap(CSShaderElement& right);
-	
+	inline bool Empty() { return RootSignature.empty(); }
 	CSShaderElement(const CSShaderElement& right)	{ bear_fill(Textures); Copy(right);}
 	CSShaderElement( CSShaderElement&& right){  bear_fill(Textures); for (bsize i = 0; i < 16; i++)SamplerStates[i] = SSS_None;;	Swap(right);}
 	CSShaderElement& operator=(const CSShaderElement& right) { Copy(right); return*this; }

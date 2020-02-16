@@ -24,6 +24,7 @@ CSMenuManager::CSMenuManager()
 void CSMenuManager::Draw()
 {
 	FUI.pfnRedraw(0);
+	GRender->FlushUI();
 }
 
 CSMenuManager::~CSMenuManager()

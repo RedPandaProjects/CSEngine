@@ -43,7 +43,7 @@ inline  bsize GetSize(BearVertexFormat format)
 void CSBlenderCompiler::Compile(CSShaderElement& shader)
 {
 }
-inline void FixTextureName(LPSTR fn)
+inline void FixTextureName(const bchar* fn)
 {
 	/*LPSTR _ext = strext(fn);
 	if (_ext &&
@@ -53,24 +53,24 @@ inline void FixTextureName(LPSTR fn)
 			0 == stricmp(_ext, ".ogm")))
 		*_ext = 0;*/
 }
-void CSBlenderCompiler::Compile(CSShader& shader/*, const bchar* textures*/ )
+void CSBlenderCompiler::Compile(CSShader& shader, const bchar* textures)
 {
-	/*m_textures.clear();
+	m_textures.clear();
 	if (textures && textures[0])
 	{
-		char* P = (char*)textures;
-		svector<char, 128> N;
-
+		bchar* P = (bchar*)textures;
+		BearVector<bchar> N;
+		N.reserve(128);
 		while (*P)
 		{
 			if (*P == ',')
 			{
 				// flush
 				N.push_back(0);
-				strlwr(N.begin());
+				//BearString::ToLower (N.data());
 
-				FixTextureName(N.begin());
-				m_textures.push_back(N.begin());
+				FixTextureName(N.data());
+				m_textures.push_back(N.data());
 				N.clear();
 			}
 			else
@@ -83,19 +83,19 @@ void CSBlenderCompiler::Compile(CSShader& shader/*, const bchar* textures*/ )
 		{
 			// flush
 			N.push_back(0);
-			strlwr(N.begin());
+			//BearString::ToLower(N.data());
 
-			FixTextureName(N.begin());
-			m_textures.push_back(N.begin());
+			FixTextureName(N.data());
+			m_textures.push_back(N.data());
 		}
 	}
-	*/
+	
 	for (bsize i = 0; i < 6; i++)
 	{
 		IDShader = i;
-		shader.E[i].RootSignature = RootSignature;
+		shader.E[i].RootSignature = RootSignature[i];
 		for (bsize a = 0; a < SVD_Count; a++)
-			shader.E[i].Pipeline[a] = m_pipeline[a];
+			shader.E[i].Pipeline[a] = m_pipeline[i][a];
 		Compile(shader.E[i]);
 	}
 	
@@ -108,11 +108,6 @@ void CSBlenderCompiler::SetInputLayout(BearPipelineDescription& Description, Sha
 	switch (VertexState)
 	{
 	case SVD_UI:
-		Description.InputLayout.Elements[0] = BearInputLayoutElement("POSITION", VF_R32G32_FLOAT, 0);
-		Description.InputLayout.Elements[1] = BearInputLayoutElement("COLOR", VF_R32G32B32A32_FLOAT, 8);
-		Description.InputLayout.Elements[2] = BearInputLayoutElement();
-		break;
-	case SVD_UIT:
 		Description.InputLayout.Elements[0] = BearInputLayoutElement("POSITION", VF_R32G32_FLOAT,0 );
 		Description.InputLayout.Elements[1] = BearInputLayoutElement("COLOR", VF_R32G32B32A32_FLOAT, 8);
 		Description.InputLayout.Elements[2] = BearInputLayoutElement("UV", VF_R32G32_FLOAT, 24);
@@ -125,13 +120,13 @@ void CSBlenderCompiler::SetInputLayout(BearPipelineDescription& Description, Sha
 }
 
 
-/*
+
 void CSBlenderCompiler::SetTexture(CSShaderElement& shader, bsize id, BearStringConteniar name)
 {
 	shader.Textures[id] = GResourcesManager->GetTexture(GetTexture(name));
-}*/
+}
 
-void CSBlenderCompiler::CreatePipeline(BearPipelineDescription& Description, const bchar* name_vs, const bchar* name_ps, ShaderVertexDeclaration FVFType)
+void CSBlenderCompiler::CreatePipeline(BearPipelineDescription& Description, bsize shader, const bchar* name_vs, const bchar* name_ps, ShaderVertexDeclaration FVFType)
 {
 	
 	const bchar* prefix = TEXT("");
@@ -139,9 +134,6 @@ void CSBlenderCompiler::CreatePipeline(BearPipelineDescription& Description, con
 	{
 	case SVD_UI:
 		prefix = TEXT("_ui");
-		break;
-	case SVD_UIT:
-		prefix = TEXT("_uit");
 		break;
 	default:
 		BEAR_RASSERT(0);
@@ -153,36 +145,36 @@ void CSBlenderCompiler::CreatePipeline(BearPipelineDescription& Description, con
 	SetInputLayout(Description, FVFType);
 	Description.Shaders.Pixel = GResourcesManager->GetPixelShader(name_ps);
 	Description.Shaders.Vertex = GResourcesManager->GetVertexShader(NameVS);
-	Description.RootSignature = RootSignature;
-	BEAR_ASSERT(m_pipeline[FVFType].empty());
-	m_pipeline[FVFType] = BearRenderInterface::CreatePipeline(Description);
+	Description.RootSignature = RootSignature[shader];
+	BEAR_ASSERT(m_pipeline[shader][FVFType].empty());
+	m_pipeline[shader][FVFType] = BearRenderInterface::CreatePipeline(Description);
 
 }
 
 
-inline int ParseName(LPCSTR N)
+inline int ParseName(const bchar* N)
 {
-	if (0 == strcmp(N, "$null"))
+	if (0 == BearString::CompareWithoutCase(N,TEXT( "$null")))
 		return -1;
-	if (0 == strcmp(N, "$base0"))
+	if (0 == BearString::CompareWithoutCase(N, TEXT("$base0")))
 		return 0;
-	if (0 == strcmp(N, "$base1"))
+	if (0 == BearString::CompareWithoutCase(N, TEXT("$base1")))
 		return 1;
-	if (0 == strcmp(N, "$base2"))
+	if (0 == BearString::CompareWithoutCase(N, TEXT("$base2")))
 		return 2;
-	if (0 == strcmp(N, "$base3"))
+	if (0 == BearString::CompareWithoutCase(N, TEXT("$base3")))
 		return 3;
-	if (0 == strcmp(N, "$base4"))
+	if (0 == BearString::CompareWithoutCase(N, TEXT("$base4")))
 		return 4;
-	if (0 == strcmp(N, "$base5"))
+	if (0 == BearString::CompareWithoutCase(N, TEXT("$base5")))
 		return 5;
-	if (0 == strcmp(N, "$base6"))
+	if (0 == BearString::CompareWithoutCase(N, TEXT("$base6")))
 		return 6;
-	if (0 == strcmp(N, "$base7"))
+	if (0 == BearString::CompareWithoutCase(N, TEXT("$base7")))
 		return 7;
 	return -1;
 }
-/*
+
 BearStringConteniar CSBlenderCompiler::GetTexture(BearStringConteniar name)
 {
 	int id = ParseName(*name);
@@ -191,7 +183,7 @@ BearStringConteniar CSBlenderCompiler::GetTexture(BearStringConteniar name)
 		return m_textures[id];
 	}
 	return name;
-}*/
+}
 
 /*
 void CSShader::Compile(XRayShader & shader)

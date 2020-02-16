@@ -9,6 +9,7 @@ public:
 public:
 	BearWindow Window;
 	BearFactoryPointer<BearRHI::BearRHIViewport> Viewport;
+	BearFactoryPointer<BearRHI::BearRHIRenderPass> RenderPass;
 	BearFactoryPointer<BearRHI::BearRHIContext> Context;
 };
 extern CSHardware* GHW;

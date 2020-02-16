@@ -28,7 +28,13 @@ HIMAGE LoadTextureExport(const char* szPicName, const byte* ucRawImage, long ulR
 		}
 	}
 	if(Texture)
-	return GResourcesManager->TextureToHimage(Texture);
+	return GResourcesManager->TextureToHimage(
+#ifdef UNICODE
+		* BearEncoding::FastToUnicode(szPicName)
+#else
+		szPicName
+#endif
+	);
 	return 0;
 }
 void FreeTextureExport(const char* szPicName)
@@ -47,11 +53,11 @@ void FreeTextureExport(const char* szPicName)
 }
 static int GetWidthExport(HIMAGE image)
 {
-	return static_cast<int>(GResourcesManager->HimageToTexture(image)->GetSize().x);
+	return static_cast<int>(GResourcesManager->GetTexture(image)->GetSize().x);
 }
 static int GetHeightExport(HIMAGE image)
 {
-	return static_cast<int>(GResourcesManager->HimageToTexture(image)->GetSize().y);
+	return static_cast<int>(GResourcesManager->GetTexture(image)->GetSize().y);
 }
 void CSResourcesManager::FunctionToC()
 {

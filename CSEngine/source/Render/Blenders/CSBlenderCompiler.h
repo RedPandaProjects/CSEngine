@@ -9,20 +9,20 @@ public:
 	CSBlenderCompiler();
 	virtual  ~CSBlenderCompiler();
 	virtual void Compile(CSShaderElement& shader);
-	void Compile(CSShader& shader);
+	void Compile(CSShader& shader, const bchar* textures);
 protected:
 	void SetInputLayout(BearPipelineDescription& Description, ShaderVertexDeclaration VertexState);
-//	void SetTexture(CSShaderElement& shader,bsize id, BearStringConteniar name);
-	void CreatePipeline(BearPipelineDescription& Description,const bchar*name_vs, const bchar* name_ps, ShaderVertexDeclaration FVFType);
+	void SetTexture(CSShaderElement& shader,bsize id, BearStringConteniar name);
+	void CreatePipeline(BearPipelineDescription& Description,bsize shader,const bchar*name_vs, const bchar* name_ps, ShaderVertexDeclaration FVFType);
 	//;
 protected:
-	//BearStringConteniar GetTexture(BearStringConteniar name);
+	BearStringConteniar GetTexture(BearStringConteniar name);
 	bsize IDShader;
 
-	BearFactoryPointer < BearRHI::BearRHIRootSignature> RootSignature;
-/*private:
-	BearVector<BearStringConteniar> m_textures;*/
+	BearFactoryPointer < BearRHI::BearRHIRootSignature> RootSignature[6];
 private:
-	BearFactoryPointer<BearRHI::BearRHIPipeline> m_pipeline[SVD_Count];
+	BearVector<BearStringConteniar> m_textures;
+private:
+	BearFactoryPointer<BearRHI::BearRHIPipeline> m_pipeline[6][SVD_Count];
 };
 #pragma pack(pop)

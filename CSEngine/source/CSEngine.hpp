@@ -13,3 +13,5 @@
 #include "Render/Resources/CSShader.h"
 #include "Render/Blenders/CSBlenderCompiler.h"
 #include "Render/Resources/CSResourcesManager.h"
+#include "Render/CSFVF.h"
+#include "Render/CSRender.h"

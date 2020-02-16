@@ -19,19 +19,24 @@ void CSBlenderScreenSet::Initialize()
 	RootSignatureDescription.Samplers[0].Shader = ST_Pixel;
 	RootSignatureDescription.SRVResources[0].Shader = ST_Pixel;
 	RootSignatureDescription.UniformBuffers[0].Shader = ST_Vertex;
-	RootSignature = BearRenderInterface::CreateRootSignature(RootSignatureDescription);
-
+	RootSignature[0] = BearRenderInterface::CreateRootSignature(RootSignatureDescription);
+	RootSignature[5] = RootSignature[0];
 	BearPipelineDescription PipelineDescription;
 
-	
-	CreatePipeline(PipelineDescription,TEXT("notransform"), TEXT("default"),SVD_UIT);
+	PipelineDescription.RenderPass = GHW->RenderPass;
+	CreatePipeline(PipelineDescription, 0, TEXT("notransform"), TEXT("default"), SVD_UI);
+	PipelineDescription.BlendState.RenderTarget[0].Enable = true;
+	PipelineDescription.BlendState.RenderTarget[0].ColorSrc = BF_SRC_ALPHA;
+	PipelineDescription.BlendState.RenderTarget[0].ColorDst = BF_INV_SRC_ALPHA;
+	PipelineDescription.RenderPass = GHW->RenderPass;
+	CreatePipeline(PipelineDescription, 5, TEXT("notransform"), TEXT("font"), SVD_UI);
 
 }
 void CSBlenderScreenSet::Compile(CSShaderElement& shader)
 {
-	if (IDShader == 0)
+	if (IDShader == 0|| IDShader == 5)
 	{
-		//SetTexture(shader, 0, "$base0");
+		SetTexture(shader, 0,TEXT( "$base0"));
 		shader.SamplerStates[0] = SSS_Default;
 		shader.TypeTransformation = STT_Screen;
 	}

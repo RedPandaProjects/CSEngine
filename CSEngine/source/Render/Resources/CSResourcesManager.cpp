@@ -8,9 +8,13 @@ CSResourcesManager::CSResourcesManager()
 	m_Blenders.insert(TEXT("hud/default"), bear_new< CSBlenderScreenSet>());
 	for (auto b = m_Blenders.begin(), e = m_Blenders.end(); b != e; b++)
 	{
+		GResourcesManager = this;
 		b->second->Initialize();
 	}
-
+	{
+		BearSamplerDescription Description;
+		SamplerDefault = BearRenderInterface::CreateSampler(Description);
+	}
 }
 
 CSResourcesManager::~CSResourcesManager()
@@ -21,15 +25,23 @@ CSResourcesManager::~CSResourcesManager()
 	}
 	for (auto b = m_Textures2Himage.begin(), e = m_Textures2Himage.end(); b != e; b++)
 	{
-		if ((*b) != 0)
+		if ((*b).size())
 		{
-			Free((*b));
+			Free(m_Textures[*b]);
 		}
 	}
 	BEAR_RASSERT(m_Textures.size() == 0);
 }
+CSTexture2D* CSResourcesManager::GetTexture(HIMAGE image)
+{
+	if (image < 1)return 0;
+	auto texture = m_Textures.find(m_Textures2Himage[image-1]);
+	BEAR_ASSERT(texture != m_Textures.end());
+	return texture->second;
+}
 CSTexture2D* CSResourcesManager::GetTexture(BearStringConteniar name)
 {
+	if (m_NotFoundedTextures.find(name) != m_NotFoundedTextures.end())return 0;
 	auto texture = m_Textures.find(name);
 	if (texture == m_Textures.end())
 	{
@@ -39,6 +51,7 @@ CSTexture2D* CSResourcesManager::GetTexture(BearStringConteniar name)
 		CSTexture2D*  t = bear_new<CSTexture2D>(name);
 		if (t->Texture2D.empty())
 		{
+			m_NotFoundedTextures.insert(name,true);
 			BearLog::Printf(TEXT("! Can't load texture [%s]"), *name);
 			bear_delete(t);
 			return 0;
@@ -64,6 +77,21 @@ CSTexture2D* CSResourcesManager::GetTexture(BearStringConteniar name, void* data
 	return texture->second;
 }
 
+class CSShaderIncluder :public BearIncluder
+{
+public:
+	CSShaderIncluder() {}
+	virtual BearRef<BearInputStream> OpenAsStream(const bchar* name)
+	{
+		return GFS->Read(TEXT("%shaders%"), name);
+	}
+	virtual BearRef<BearBufferedReader> OpenAsBuffer(const bchar* name)
+	{
+		return BearRef<BearBufferedReader>(bear_new<BearMemoryStream>(**GFS->Read(TEXT("%shaders%"), name)));
+	}
+};
+
+
 BearFactoryPointer<BearRHI::BearRHIShader> CSResourcesManager::GetPixelShader(BearStringConteniar name)
 {
 	auto item = m_PShaders.find(name);
@@ -74,15 +102,15 @@ BearFactoryPointer<BearRHI::BearRHIShader> CSResourcesManager::GetPixelShader(Be
 		BearFactoryPointer<BearRHI::BearRHIShader> shader = BearRenderInterface::CreatePixelShader();
 		BearString Text;
 		{
-			auto File = GFS->Read(TEXT("%cur_shaders%"), *name, TEXT(".ps"));
+			auto File = GFS->Read(TEXT("%shaders%"), *name, TEXT(".ps"));
 			File->ToString(Text, BearEncoding::UTF8);
 		}
 		BearMap<BearString, BearString> Defines;
 		{
 
-
+			CSShaderIncluder Includer;
 			BearString out;
-			if (!shader->LoadAsText(*Text, Defines, out, 0))
+			if (!shader->LoadAsText(*Text, Defines, out, &Includer))
 			{
 				BearLog::Printf(TEXT("------------------------------------------------------------------------"));
 				BearLog::Printf(*out);
@@ -112,15 +140,16 @@ BearFactoryPointer<BearRHI::BearRHIShader> CSResourcesManager::GetVertexShader(B
 		BearFactoryPointer<BearRHI::BearRHIShader> shader = BearRenderInterface::CreateVertexShader();
 		BearString Text;
 		{
-			auto File = GFS->Read(TEXT("%cur_shaders%"), *name, TEXT(".vs"));
+			auto File = GFS->Read(TEXT("%shaders%"), *name, TEXT(".vs"));
 			File->ToString(Text, BearEncoding::UTF8);
 		}
 		BearMap<BearString, BearString> Defines;
 		{
 
 
+			CSShaderIncluder Includer;
 			BearString out;
-			if (!shader->LoadAsText(*Text, Defines, out, 0))
+			if (!shader->LoadAsText(*Text, Defines, out, &Includer))
 			{
 				BearLog::Printf(TEXT("------------------------------------------------------------------------"));
 				BearLog::Printf(*out);
@@ -149,7 +178,7 @@ void CSResourcesManager::Free(CSTexture2D* texture)
 		if (texture->UniqueNumber)
 		{
 
-			m_Textures2Himage[texture->UniqueNumber] = 0;
+			m_Textures2Himage[texture->UniqueNumber].set(TEXT(""));
 		}
 		BearLog::Printf(TEXT("Unload texture [%s]"),* texture->GetName());
 		m_Textures.erase(texture->GetName());
@@ -157,32 +186,49 @@ void CSResourcesManager::Free(CSTexture2D* texture)
 	}
 }
 
-HIMAGE CSResourcesManager::TextureToHimage(CSTexture2D* texture)
+HIMAGE CSResourcesManager::TextureToHimage(BearStringConteniar name)
 {
-	for (auto b = m_Textures2Himage.begin(),  e = m_Textures2Himage.end(); b != e; b++)
+	CSTexture2D* Texture = 0;
 	{
-		if ((*b) == 0)
+		auto item = m_Textures.find(name);
+		if (item == m_Textures.end())
 		{
-			(*b) = texture;
-			texture->UniqueNumber = static_cast<int32>(b - m_Textures2Himage.begin());
-			return texture->UniqueNumber+1;
+			Texture = GetTexture(name);
+		}
+		else
+		{
+			if (item->second->UniqueNumber >= 0)
+			{
+				return item->second->UniqueNumber+1;
+			}
+			Texture = item->second;
 		}
 	}
-	texture->UniqueNumber = static_cast<int32>(m_Textures2Himage.size());
-	m_Textures2Himage.push_back(texture);
-	return texture->UniqueNumber+1;
+	for (auto b = m_Textures2Himage.begin(),  e = m_Textures2Himage.end(); b != e; b++)
+	{
+		if ((*b).size()==0)
+		{
+			(*b) = name;
+			Texture->UniqueNumber = static_cast<int32>(b - m_Textures2Himage.begin());
+			return Texture->UniqueNumber+1;
+		}
+	}
+	Texture->UniqueNumber = static_cast<int32>(m_Textures2Himage.size());
+	m_Textures2Himage.push_back(name);
+	return Texture->UniqueNumber+1;
 }
 
-CSTexture2D* CSResourcesManager::HimageToTexture(HIMAGE id)
+BearStringConteniar CSResourcesManager::HimageToTexture(HIMAGE id)
 {
+	if (id == 0)return TEXT("null.tga");
 	BEAR_ASSERT(id > 0);
 	return m_Textures2Himage[id-1];
 }
 
-void CSResourcesManager::Compile(CSShader& shader, BearStringConteniar Name)
+void CSResourcesManager::Compile(CSShader& shader, BearStringConteniar Name, const bchar* textures)
 {
 	auto item = m_Blenders.find(Name);
-	BEAR_ASSERT(item == m_Blenders.end());
-	item->second->Compile(shader);
+	BEAR_ASSERT(item != m_Blenders.end());
+	item->second->Compile(shader, textures);
 }
 

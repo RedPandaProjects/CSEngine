@@ -32,7 +32,7 @@ void CSEngine::Initialize()
 	BearString::Contact(FSFilePath, BEAR_PATH);
 	BearString::Contact(FSFilePath, TEXT(".."));
 	BearString::Contact(FSFilePath, BEAR_PATH);
-	BearString::Contact(FSFilePath, TEXT("source.fs"));
+	BearString::Contact(FSFilePath, TEXT("cs16.fs"));
 
 	GFS = bear_new<BearFileSystem>();
 	BEAR_ERRORMESSAGE(GFS->LoadFromFile(FSFilePath, BearEncoding::UTF8), TEXT("Не найден %s"), TEXT("cs16.fs"));
@@ -46,6 +46,8 @@ void CSEngine::Initialize()
 	GCVars = bear_new< CSCVars>();
 	GConsole = bear_new<CSConsole>();
 	GHW = bear_new<CSHardware>();
+
+	GRender = bear_new< CSRender>();
 	GResourcesManager = bear_new<CSResourcesManager>();
 	GMenuManager = bear_new< CSMenuManager>();
 }
@@ -74,6 +76,7 @@ void CSEngine::DestroyDLL()
 
 void CSEngine::Destroy()
 {
+	bear_delete(GRender);
 	bear_delete(GMenuManager);
 	bear_delete(GResourcesManager);
 	bear_delete(GHW);
