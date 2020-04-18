@@ -24,4 +24,5 @@ extern const bchar* GGameName;
 extern const bchar* GBaseDir;
 extern const bchar* GDLLName;
 extern CSEngine* GEngine;
-extern ui_enginefuncs_t FUIEngine;
+extern SEngineMenuFunctions GMenuEngineFunctions;
+extern SServerEngineFunction GServerEngineFunction;

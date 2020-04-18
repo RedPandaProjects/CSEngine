@@ -7,8 +7,26 @@ CSRender::CSRender()
 		m_ScreenTransformation = BearRenderInterface::CreateUniformBuffer();
 		m_ScreenTransformation->Create(sizeof(float) * 4, true);
 	}
+	{
+#ifdef DEVELOPER_VERSION
+		BearStringPath path;
+		GFS->UpdatePath(TEXT("%game%"), 0, path);
+		BearFileManager::PathCombine(path, TEXT("fonts"),TEXT("default.ttf"));
+		BEAR_ASSERT(m_DefaultFont.LoadFromTTF(path, TEXT("QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm!@#$%^&*()_-=+/\\|\"\'"), 1024, 768, 24));
+		GFS->UpdatePath(TEXT("%game%"), 0, path);
+		BearFileManager::PathCombine(path, TEXT("fonts"), TEXT("default.fon"));
+		BEAR_ASSERT(m_DefaultFont.SaveToFile(path));
+#else
+		BEAR_ASSERT(m_DefaultFont.LoadFromStream(**GFS->Read(TEXT("%game%"), TEXT("fonts" BEAR_PATH "default.fon"))));
+#endif
+
+		GResourcesManager->GetTexture(TEXT("font/default"))->Texture2D = m_DefaultFont.CreateTexture();
+		m_DefauktFontImage = GResourcesManager->TextureToHimage(TEXT("font/default"));
+	}
 	Resize(1024, 768);
 	FunctionToC();
+
+
 }
 
 void CSRender::Resize(bsize w, bsize h)
@@ -34,6 +52,39 @@ void CSRender::PushUIRender(const BearVector4<float>& rect, const BearVector4<fl
 	m_UIRenders.push_back(in);
 }
 
+bsize CSRender::PushUIText(const char* str, float x_, float y_, const BearColor& color)
+{
+	bsize count = 0;
+	BearVector2<float> pos(x_, y_);
+	while (*str)
+	{
+		count++;
+		auto&map= m_DefaultFont.GetListChars();
+		auto item =  map.find(BearEncoding::ToUTF16(*str));
+		if(item != map.end())
+		{
+			float x = pos.x + item->second.Position.x, y = pos.y + item->second.Position.y;
+			float width = item->second.Size.x;
+			float height = item->second.Size.y;
+
+			SUIRender in;
+			in.UV = item->second.TextureUV;
+			in.UV.x1 += in.UV.x;
+			in.UV.y1 += in.UV.y;
+			in.Rect .set(x,y,width,height);
+			in.Color = color;
+			in.Image = m_DefauktFontImage;
+			in.Flags = CSRender::FUIR_Font;
+			m_UIRenders.push_back(in);
+			pos.x += item->second.Advance.x;
+		}
+		str++;
+	}
+	return count;
+}
+
+
+
 void CSRender::FlushUI()
 {
 	if (m_UIRenders.size() == 0)return;
@@ -50,7 +101,7 @@ void CSRender::FlushUI()
 	{
 		max_image = BearMath::max(b->Image, max_image);
 	}
-	if (m_UIShaders.size() < max_image + 1)
+	if (static_cast<int>( m_UIShaders.size()) < max_image + 1)
 	{
 		m_UIShaders.resize(max_image + 1);
 	}

@@ -178,7 +178,7 @@ inline int ParseName(const bchar* N)
 BearStringConteniar CSBlenderCompiler::GetTexture(BearStringConteniar name)
 {
 	int id = ParseName(*name);
-	if (id >= 0&&id<m_textures.size())
+	if (id >= 0&&id<static_cast<int>(m_textures.size()))
 	{
 		return m_textures[id];
 	}

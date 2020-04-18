@@ -49,7 +49,7 @@ CSTexture2D* CSResourcesManager::GetTexture(BearStringConteniar name)
 		BearLog::Printf(TEXT("Load texture [%s]"), *name);
 
 		CSTexture2D*  t = bear_new<CSTexture2D>(name);
-		if (t->Texture2D.empty())
+		if (t->Empty())
 		{
 			m_NotFoundedTextures.insert(name,true);
 			BearLog::Printf(TEXT("! Can't load texture [%s]"), *name);
@@ -175,7 +175,7 @@ void CSResourcesManager::Free(CSTexture2D* texture)
 	texture->Count--;
 	if (texture->Count == 0)
 	{
-		if (texture->UniqueNumber)
+		if (texture->UniqueNumber>=0)
 		{
 
 			m_Textures2Himage[texture->UniqueNumber].set(TEXT(""));

@@ -13,6 +13,11 @@ public class CSEngine :Executable
 		Projects.Public.Add("bear_graphics");
 		Defines.Private.Add("CSENGINE_EXPORTS");
 		IncludeAutonomousProjects.Add("CSMenu");
+		IncludeAutonomousProjects.Add("CSMP");
+		if (BearBuildTool.Config.Global.DevVersion)
+		{
+			Projects.Private.Add("freetype");
+		}
 		Console = true;
     }
 } 

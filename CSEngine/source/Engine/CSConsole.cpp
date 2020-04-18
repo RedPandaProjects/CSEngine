@@ -98,9 +98,13 @@ void CSConsole::Execute()
 }
 
 
-static int AddCommandExport(const char* cmd_name, void(*function)(void))
+static int AddCommandExport1(const char* cmd_name, void(*function)(void))
 {
 	return GConsole->AddCommand(cmd_name, function);
+}
+static void AddCommandExport2(const char* cmd_name, void(*function)(void))
+{
+	BEAR_ASSERT( !GConsole->AddCommand(cmd_name, function));
 }
 static void ClientCmdExport(int execute_now, const char* szCmdString)
 {
@@ -125,10 +129,12 @@ static char* CmdArgsExport(void)
 }
 void CSConsole::FunctionToC()
 {
-	FUIEngine.pfnClientCmd = ClientCmdExport;
-	FUIEngine.pfnAddCommand = AddCommandExport;
-	FUIEngine.pfnDelCommand = DeleteCommandExport;
-	FUIEngine.pfnCmdArgc = CmdArgcExport;
-	FUIEngine.pfnCmdArgv = CmdArgvExport;
-	FUIEngine.pfnCmd_Args = CmdArgsExport;
+	GMenuEngineFunctions.ClientCmd = ClientCmdExport;
+	GMenuEngineFunctions.AddCommand = AddCommandExport1;
+	GMenuEngineFunctions.DelCommand = DeleteCommandExport;
+	GMenuEngineFunctions.CmdArgc = CmdArgcExport;
+	GMenuEngineFunctions.CmdArgv = CmdArgvExport;
+	GMenuEngineFunctions.Cmd_Args = CmdArgsExport;
+
+	GServerEngineFunction.AddServerCommand = AddCommandExport2;
 }

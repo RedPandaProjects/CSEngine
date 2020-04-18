@@ -41,3 +41,4 @@ typedef union DLONG {
 extern DLONG	dlong;
 
 
+typedef int qboolean;

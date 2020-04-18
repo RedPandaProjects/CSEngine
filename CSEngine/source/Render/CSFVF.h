@@ -15,3 +15,4 @@ struct F_UI
 	float x, y;
 	float r, g, b, a;
 	float u, v;
+};

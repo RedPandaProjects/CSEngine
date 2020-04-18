@@ -14,4 +14,8 @@
 #include "Render/Blenders/CSBlenderCompiler.h"
 #include "Render/Resources/CSResourcesManager.h"
 #include "Render/CSFVF.h"
+#include "Render/Resources/CSFont.h"
 #include "Render/CSRender.h"
+#include "Engine/CSKeyState.h"
+#include "Engine/CSSound.h"
+#include "Engine/CSMPManager.h"

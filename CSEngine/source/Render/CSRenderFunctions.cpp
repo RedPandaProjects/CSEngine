@@ -43,6 +43,7 @@ static void DrawCharacterExport(int x, int y, int width, int height, int ch, int
 	s2 = s1 + size;
 	t2 = t1 + size;
 	LSetColor.SetAsUint32(static_cast<uint32>(ulRGBA));
+	bear_swap(LSetColor.R32F, LSetColor.B32F);
 	BearVector4<float> Rect;
 	Rect.set(static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height));
 	BearVector4<float> UV;
@@ -52,28 +53,33 @@ static void DrawCharacterExport(int x, int y, int width, int height, int ch, int
 static int DrawConsoleStringExport(int x, int y, const char* string)
 {
 	int count = 0;
-	while (*string)
-	{
-		DrawCharacterExport(x, y, 8, 24, *string, LSetColor.R8G8B8A8, 1);
-		x += 8;
-		string++; count++;
-	}
+	count =static_cast<int>( GRender->PushUIText(string, static_cast<float>(x), static_cast<float>(y), LSetColor));
 	return count;
 }
-void DrawSetTextColorExports(int r, int g, int b, int alpha)
+static void DrawSetTextColorExports(int r, int g, int b, int alpha)
 {
 	LSetColor.SetAsUint8(static_cast<uint8>(r), static_cast<uint8>(g), static_cast<uint8>(b), static_cast<uint8>(alpha));
 }
+static void FillRGBAExport(int x, int y, int width, int height, int r, int g, int b, int a)
+{
+	LSetColor.SetAsUint8(static_cast<uint8>(r), static_cast<uint8>(g), static_cast<uint8>(b), static_cast<uint8>(a));
+	BearVector4<float> Rect;
+	Rect.set(static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height));
+	BearVector4<float> UV;
+	UV.set(0, 0, 1, 1);
+	GRender->PushUIRender(Rect, UV, LSetColor, 0);
+}
 void CSRender::FunctionToC()
 {
-	FUIEngine.pfnPIC_Set = PICSetExports;
-	FUIEngine.pfnPIC_Draw = PICDrawExports;
-	FUIEngine.pfnPIC_DrawAdditive = PICDrawExports;
-	FUIEngine.pfnPIC_DrawHoles = PICDrawExports;
-	FUIEngine.pfnPIC_DrawTrans = PICDrawExports;
-	FUIEngine.pfnDrawCharacter = DrawCharacterExport;
-	FUIEngine.pfnDrawConsoleString = DrawConsoleStringExport;
-	FUIEngine.pfnDrawSetTextColor = DrawSetTextColorExports;
+	GMenuEngineFunctions.PIC_Set = PICSetExports;
+	GMenuEngineFunctions.PIC_Draw = PICDrawExports;
+	GMenuEngineFunctions.PIC_DrawAdditive = PICDrawExports;
+	GMenuEngineFunctions.PIC_DrawHoles = PICDrawExports;
+	GMenuEngineFunctions.PIC_DrawTrans = PICDrawExports;
+	GMenuEngineFunctions.DrawCharacter = DrawCharacterExport;
+	GMenuEngineFunctions.DrawConsoleString = DrawConsoleStringExport;
+	GMenuEngineFunctions.DrawSetTextColor = DrawSetTextColorExports;
+	GMenuEngineFunctions.FillRGBA = FillRGBAExport;
 
 }
 

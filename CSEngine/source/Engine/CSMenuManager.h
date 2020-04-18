@@ -5,9 +5,11 @@ class CSMenuManager
 public:
 	CSMenuManager();
 	void Draw();
+	void KeyEvent(int key, bool down);
+	void MouseEvent(int x, int y);
 	~CSMenuManager();
-
 };
 extern CSMenuManager* GMenuManager;
-extern MENUAPI  FMenuAPI;
+extern SEngineMenuFunctions GEngineMenuFunctions;
+extern FGET_MENU_FUNCIOTNS  FGETMenuAPI;
 extern ui_globalvars_t   FUIGlobalVars;

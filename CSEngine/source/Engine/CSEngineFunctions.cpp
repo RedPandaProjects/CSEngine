@@ -1,5 +1,8 @@
 #include "CSEngine.hpp"
-ui_enginefuncs_t FUIEngine;
+extern const bchar* GDLLName;
+extern const bchar* GGameName;
+ SEngineMenuFunctions GMenuEngineFunctions;
+ SServerEngineFunction GServerEngineFunction;
 static void FNull(...)
 {
 	BearLog::DebugPrintf(TEXT("~ Function Null"));
@@ -50,6 +53,10 @@ static void PrintfExport(char* text_, ...)
 	va_end(va);
 	BearLog::Printf(TEXT(BEAR_PRINT_STR), string_out);
 }
+static void PrintExport(const char* text)
+{
+	BearLog::Printf(TEXT(BEAR_PRINT_STR), text);
+}
 static void NPrintfExport(int ind, char* text_, ...)
 {
 	BearStringAnsi4096 string_out;
@@ -88,14 +95,58 @@ static int FileExistExport(const char* file, int dironly)
 			);
 	}
 }
+
+static int ClientInGameExport()
+{
+	return 0;
+}
+static void DrawLogoExport(const char* name, float, float, float, float)
+{
+	
+}
+static int CheckGameDllExport()
+{
+	BearString64 name;
+	BearString::Copy(name, GDLLName);
+	BearString::Contact(name, TEXT("MP"));
+	return BearManagerProjects::CheckProject(name);
+
+}
+static  int	IsMapValidExport(char* filename)
+{
+	return 1;
+}
+static void GetGameDirExport(char* out)
+{
+	BearString::Copy(out, 64,* BearEncoding::FastToAnsi(GGameName));
+}
+static int IsDedicatedServerExport()
+{
+	return 0;
+}
+static int EngCheckParmExport(const char* param,char**)
+{
+	return !!strstr(GetCommandLineA(), param);
+}
 void CSEngine::FunctionToC()
 {
-	FillListFunction(&FUIEngine, sizeof(FUIEngine) / sizeof(void(*)(...)));
-	FUIEngine.pfnMemAlloc = MallocExport;
-	FUIEngine.pfnMemFree = FreeExport;
-	FUIEngine.pfnGetGameInfo = GetGameInfoExport;
-	FUIEngine.pfnCreateMapsList = CreateMapListExport;
-	FUIEngine.Con_Printf = PrintfExport;
-	FUIEngine.Con_NPrintf = NPrintfExport;
-	FUIEngine.pfnFileExists = FileExistExport;
+	FillListFunction(&GMenuEngineFunctions, sizeof(GMenuEngineFunctions) / sizeof(void(*)(...)));
+	GMenuEngineFunctions.MemAlloc = MallocExport;
+	GMenuEngineFunctions.MemFree = FreeExport;
+	GMenuEngineFunctions.GetGameInfo = GetGameInfoExport;
+	GMenuEngineFunctions.CreateMapsList = CreateMapListExport;
+	GMenuEngineFunctions.Con_Printf = PrintfExport;
+	GMenuEngineFunctions.Con_NPrintf = NPrintfExport;
+	GMenuEngineFunctions.FileExists = FileExistExport;
+	GMenuEngineFunctions.ClientInGame = ClientInGameExport;
+	GMenuEngineFunctions.DrawLogo = DrawLogoExport;
+	GMenuEngineFunctions.CheckGameDll = CheckGameDllExport;
+	GMenuEngineFunctions.IsMapValid = IsMapValidExport;
+
+	FillListFunction(&GServerEngineFunction, sizeof(GServerEngineFunction) / sizeof(void(*)(...)));
+	GServerEngineFunction.GetGameDir = GetGameDirExport;
+	GServerEngineFunction.IsDedicatedServer = IsDedicatedServerExport;
+	GServerEngineFunction.EngCheckParm = EngCheckParmExport;
+	GServerEngineFunction.ServerPrint = PrintExport;
+
 }

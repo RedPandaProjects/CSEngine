@@ -61,8 +61,8 @@ static int GetHeightExport(HIMAGE image)
 }
 void CSResourcesManager::FunctionToC()
 {
-	FUIEngine.pfnPIC_Load = LoadTextureExport;
-	FUIEngine.pfnPIC_Free = FreeTextureExport;
-	FUIEngine.pfnPIC_Width = GetWidthExport;
-	FUIEngine.pfnPIC_Height = GetHeightExport;
+	GMenuEngineFunctions.PIC_Load = LoadTextureExport;
+	GMenuEngineFunctions.PIC_Free = FreeTextureExport;
+	GMenuEngineFunctions.PIC_Width = GetWidthExport;
+	GMenuEngineFunctions.PIC_Height = GetHeightExport;
 }

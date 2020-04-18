@@ -45,11 +45,19 @@ void CSEngine::Initialize()
 	GCommonParser = bear_new<CSCommonParser>();
 	GCVars = bear_new< CSCVars>();
 	GConsole = bear_new<CSConsole>();
+	GKeyState = bear_new<CSKeyState>();
+
 	GHW = bear_new<CSHardware>();
 
-	GRender = bear_new< CSRender>();
+	GSound = bear_new<CSSound>();
+
 	GResourcesManager = bear_new<CSResourcesManager>();
+
+	GRender = bear_new< CSRender>();
+
 	GMenuManager = bear_new< CSMenuManager>();
+	GMPManager = bear_new<CSMPManager>();
+	GMPManager->Initialize();
 }
 
 void CSEngine::Loop()
@@ -57,9 +65,30 @@ void CSEngine::Loop()
 
 	while (GHW->Window.Update())
 	{
+		BearEventWindows Event;
+		{
+		
+			while (GHW->Window.GetEvent(Event))
+			{
+				switch (Event.Type)
+				{
+				case WET_KeyDown:
+					GKeyState->Event(Event.Key, true);
+					break;
+				case WET_KeyUp:
+					GKeyState->Event(Event.Key, false);
+					break;
+				case WET_MouseMove:
+					GMenuManager->MouseEvent(int(Event.Position.x),int( Event.Position.y));
+				default:
+					break;
+				}
+			}
+		}
 		GHW->Context->ClearFrameBuffer();
 		GMenuManager->Draw();
 		GHW->Context->Flush(true);
+		GConsole->Execute();
 	}
 
 }
@@ -76,10 +105,13 @@ void CSEngine::DestroyDLL()
 
 void CSEngine::Destroy()
 {
+	bear_delete(GMPManager);
 	bear_delete(GRender);
 	bear_delete(GMenuManager);
 	bear_delete(GResourcesManager);
+	bear_delete(GSound);
 	bear_delete(GHW);
+	bear_delete(GKeyState);
 	bear_delete(GConsole);
 	bear_delete(GCVars);
 	bear_delete(GCommonParser);
@@ -90,14 +122,21 @@ void CSEngine::Destroy()
 void CSEngine::MakeMapList()
 {
 }
-
 void CSEngine::InitializeDLL()
 {
 	BearString64 name;
 	{
 		BearString::Copy(name, GDLLName);
 		BearString::Contact(name, TEXT("Menu"));
-		FMenuAPI = BearManagerProjects::GetFunctionInProject<MENUAPI>(name, TEXT("GetMenuAPI"));
+		FGETMenuAPI = BearManagerProjects::GetFunctionInProject<FGET_MENU_FUNCIOTNS>(name, TEXT("GetMenuAPI"));
+	}
+	{
+		BearString::Copy(name, GDLLName);
+		BearString::Contact(name, TEXT("MP"));
+		FGETServerAPI = BearManagerProjects::GetFunctionInProject <FGET_SERVER_FUNCTIONS>(name, TEXT("GetEntityAPI"));
+		FGETServerNewAPI =BearManagerProjects::GetFunctionInProject<FGET_SERVER_NEW_FUNCTIONS>(name, TEXT("GetNewDLLFunctions"));
+		FSETServerAPI = BearManagerProjects::GetFunctionInProject < FSET_SERVERENGINE_FUNCTIONS>(name, TEXT("GiveFnptrsToDll"));
+	
 	}
 }
 

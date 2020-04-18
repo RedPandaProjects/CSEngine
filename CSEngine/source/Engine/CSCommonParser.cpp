@@ -126,7 +126,7 @@ static void FreeExport(void*buffer)
 }
 void CSCommonParser::FunctionToC()
 {
-	FUIEngine.COM_LoadFile = LoadExport;
-	FUIEngine.COM_ParseFile = NextTokenExport;
-	FUIEngine.COM_FreeFile = FreeExport;
+	GMenuEngineFunctions.COM_LoadFile = LoadExport;
+	GMenuEngineFunctions.COM_ParseFile = NextTokenExport;
+	GMenuEngineFunctions.COM_FreeFile = FreeExport;
 }

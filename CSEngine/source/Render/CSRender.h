@@ -12,9 +12,12 @@ public:
 		FUIR_Font=1<<0,
 	};
 	void PushUIRender(const BearVector4<float>&rect,const BearVector4<float>&uv,const BearColor&color,HIMAGE image,BearFlags<uint32> Flags= FUIR_None);
+	bsize PushUIText(const char*str,float x,float y, const BearColor& color);
 	void FlushUI();
 	bool SetShader(BearFactoryPointer<BearRHI::BearRHIContext>&context, CSShaderElement&element, ShaderVertexDeclaration fvf);
 private:
+	CSFont m_DefaultFont;
+	HIMAGE m_DefauktFontImage;
 	void FunctionToC();
 	BearVector<CSShader> m_UIShaders;
 	struct SUIRender

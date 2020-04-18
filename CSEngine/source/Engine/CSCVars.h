@@ -6,6 +6,8 @@ class CSCVars
 public:
 	CSCVars();
 	~CSCVars();
+	void  RegisterVariable(cvar_t*var);
+	cvar_t* GetPointer(const char* szName);
 	cvar_t* RegisterVariable(const char* szName, const char* szValue, int flags);
 	float GetFloat(const char* szName);
 	char* GetString(const char* szName);

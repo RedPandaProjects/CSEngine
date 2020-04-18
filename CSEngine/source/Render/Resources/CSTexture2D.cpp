@@ -2,7 +2,16 @@
 
 CSTexture2D::CSTexture2D(BearStringConteniar Name):CSResourceNamed(Name)
 {
-	if (!GFS->ExistFile(TEXT("%game%"), *Name))return;
+	if (BearString::ExistPossition(*Name, 0, TEXT("font/")))
+	{
+		m_empty = false;
+		return;
+	}
+	if (!GFS->ExistFile(TEXT("%game%"), *Name))
+	{
+		m_empty = true;
+		return;
+	}
 	bsize size = BearString::GetSize(*Name);
 	bool dds = BearString::Compare(*Name + size - 4, TEXT(".dds")) == 0;
 	BearImage Image;
@@ -14,7 +23,7 @@ CSTexture2D::CSTexture2D(BearStringConteniar Name):CSResourceNamed(Name)
 	{
 		BEAR_ASSERT(Image.LoadFromStream(0, **GFS->Read(TEXT("%game%"), *Name)));
 	}
-
+	m_empty = false;
 	m_Size = Image.GetSize();
 	Texture2D = BearRenderInterface::CreateTexture2D(Image.GetSize().x, Image.GetSize().y, Image.GetMips(), Image.GetDepth(), Image.GetFormat(), TU_STATIC, *Image);
 

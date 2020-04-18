@@ -2,7 +2,7 @@
 CSHardware* GHW = 0;
 CSHardware::CSHardware():Window()
 {
-	BEAR_ASSERT(BearRenderInterface::Initialize(TEXT("bear_render_vulkan1_0")));
+	BEAR_ASSERT(BearRenderInterface::Initialize(TEXT("bear_render_dx11")));
 	{
 		BearViewportDescription Description;
 		Description.Clear = true;
@@ -24,6 +24,6 @@ CSHardware::~CSHardware()
 {
 	Context.clear();
 	Viewport.clear();
-
+	RenderPass.clear();
 	BearRenderInterface::Destroy();
 }
